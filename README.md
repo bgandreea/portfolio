@@ -98,7 +98,7 @@ Do not commit real credentials. Use test accounts and environment variables.
 ## 5. Publish with GitHub Pages
 
 1. Create a new GitHub repository.
-2. Push these files to its `main` branch.
+2. Push these files to its `master` branch.
 3. Open **Settings > Pages** in the repository.
 4. Under **Build and deployment**, select **GitHub Actions** as the source.
 5. Push a commit or manually run the **Deploy portfolio to GitHub Pages** workflow.
