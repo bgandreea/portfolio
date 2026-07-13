@@ -1,6 +1,6 @@
 # Quality Assurance Portfolio
 
-A responsive GitHub Pages portfolio for a Quality Assurance Engineer. It includes:
+A responsive GitHub Pages portfolio template. It includes:
 
 - a professional introduction and skills section;
 - a complete test case example;
@@ -16,8 +16,8 @@ Edit `src/config.ts`:
 
 ```ts
 export const portfolioConfig = {
-  name: "Andreea",
-  role: "Quality Assurance Engineer",
+  name: "YOUR_NAME",
+  role: "YOUR_ROLE",
   siteUrl: "https://YOUR_GITHUB_USERNAME.github.io/portfolio",
   githubUsername: "YOUR_GITHUB_USERNAME",
   linkedInUrl: "https://www.linkedin.com/in/YOUR_LINKEDIN_SLUG",
@@ -36,6 +36,8 @@ export const portfolioConfig = {
 
 At minimum, replace:
 
+- `YOUR_NAME`
+- `YOUR_ROLE`
 - `YOUR_GITHUB_USERNAME`
 - `YOUR_LINKEDIN_SLUG`
 - `siteUrl` with your published GitHub Pages URL
