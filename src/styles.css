@@ -251,6 +251,16 @@ h1 span {
   background-clip: text;
 }
 
+.hero-role {
+  max-width: 620px;
+  margin: -10px 0 18px;
+  color: var(--accent-2);
+  font-size: clamp(1rem, 2vw, 1.45rem);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+}
+
 .hero-intro {
   max-width: 620px;
   margin-bottom: 34px;
@@ -281,6 +291,14 @@ h1 span {
 
 .button:hover {
   transform: translateY(-2px);
+}
+
+.button:focus-visible,
+.nav-toggle:focus-visible,
+#copy-code:focus-visible,
+.repo-search input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 .button-primary {
@@ -1108,6 +1126,13 @@ pre {
 
   h1 {
     font-size: clamp(3rem, 15vw, 5rem);
+  }
+
+  .hero-role {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 1rem;
+    line-height: 1.5;
   }
 
   .hero {

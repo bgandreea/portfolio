@@ -1,6 +1,6 @@
-# QA Automation Portfolio
+# Quality Assurance Portfolio
 
-A responsive GitHub Pages portfolio for a QA Automation Engineer. It includes:
+A responsive GitHub Pages portfolio for a Quality Assurance Engineer. It includes:
 
 - a professional introduction and skills section;
 - a complete test case example;
@@ -17,8 +17,19 @@ Edit `src/config.ts`:
 ```ts
 export const portfolioConfig = {
   name: "Andreea",
-  role: "QA Automation Engineer",
+  role: "Quality Assurance Engineer",
+  siteUrl: "https://YOUR_GITHUB_USERNAME.github.io/portfolio",
   githubUsername: "YOUR_GITHUB_USERNAME",
+  linkedInUrl: "https://www.linkedin.com/in/YOUR_LINKEDIN_SLUG",
+  headline: "Test planning, automation, and release support.",
+  metaDescription: "Short summary used for search and social previews.",
+  contactMessage: "I am available to discuss quality assurance opportunities.",
+  focus: "UI and API testing",
+  approach: "Risk-based testing",
+  about: [
+    "First paragraph for the About section.",
+    "Second paragraph for the About section."
+  ],
   // ...
 };
 ```
@@ -27,8 +38,11 @@ At minimum, replace:
 
 - `YOUR_GITHUB_USERNAME`
 - `YOUR_LINKEDIN_SLUG`
+- `siteUrl` with your published GitHub Pages URL
 
 The repository section calls the public GitHub API in the browser. GitHub applies rate limits to requests that are not authenticated.
+
+Page title, description, Open Graph tags, and the social preview image are generated from `src/config.ts` at build time.
 
 ## 2. Run the portfolio locally
 
@@ -106,7 +120,8 @@ Edit both the Markdown files and `src/content.ts` when replacing the examples wi
 - Test examples: `src/content.ts`
 - Page structure and behavior: `src/main.ts`
 - Visual design: `src/styles.css`
-- Browser title and metadata: `index.html`
+- Social preview image and metadata: generated at build time from `src/config.ts`
+- Typecheck CI: `.github/workflows/ci.yml`
 - Deployment: `.github/workflows/deploy.yml`
 
 ## Privacy note

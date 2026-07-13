@@ -1,5 +1,5 @@
 import "./styles.css";
-import { portfolioConfig } from "./config";
+import { pageTitle, portfolioConfig } from "./config";
 import { automationSnippet, testCase, testPlan } from "./content";
 
 type GitHubRepository = {
@@ -22,6 +22,8 @@ const app = document.querySelector<HTMLDivElement>("#app");
 if (!app) {
   throw new Error("App root was not found.");
 }
+
+document.title = pageTitle;
 
 const escapeHtml = (value: string): string =>
   value.replace(
@@ -82,16 +84,17 @@ app.innerHTML = `
     <section class="hero section-shell" aria-labelledby="hero-title">
       <div class="hero-copy reveal">
         <p class="eyebrow"><span class="status-dot"></span>${escapeHtml(portfolioConfig.availability)}</p>
-        <h1 id="hero-title"><span>Test planning, automation, and release support.</span></h1>
+        <h1 id="hero-title"><span>${escapeHtml(portfolioConfig.headline)}</span></h1>
+        <p class="hero-role">${escapeHtml(portfolioConfig.role)}</p>
         <p class="hero-intro">${escapeHtml(portfolioConfig.intro)}</p>
         <div class="hero-actions">
           <a class="button button-primary" href="#artifacts">Explore my work ${icon("arrow")}</a>
           <a class="button button-ghost" href="${githubProfileUrl}" target="_blank" rel="noreferrer">${icon("github")} GitHub profile</a>
         </div>
         <dl class="hero-facts">
-          <div><dt>Focus</dt><dd>UI and API testing</dd></div>
+          <div><dt>Focus</dt><dd>${escapeHtml(portfolioConfig.focus)}</dd></div>
           <div><dt>Based in</dt><dd>${escapeHtml(portfolioConfig.location)}</dd></div>
-          <div><dt>Approach</dt><dd>Risk-based testing</dd></div>
+          <div><dt>Approach</dt><dd>${escapeHtml(portfolioConfig.approach)}</dd></div>
         </dl>
       </div>
       <div class="hero-visual reveal" aria-label="Stylized quality engineering dashboard">
@@ -125,8 +128,7 @@ app.innerHTML = `
       </div>
       <div class="about-grid reveal">
         <div class="about-copy">
-          <p>I am a QA Automation Engineer focused on manual testing, test planning, defect investigation, and automated checks.</p>
-          <p>I value maintainable tests, clear reporting, and practical coverage of the areas that matter most to users and the business.</p>
+          ${portfolioConfig.about.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
         </div>
         <div class="skills" aria-label="Technical skills">
           ${portfolioConfig.skills.map((skill) => `<span>${escapeHtml(skill)}</span>`).join("")}
@@ -238,7 +240,7 @@ app.innerHTML = `
       <div class="section-shell contact-inner reveal">
         <p class="section-kicker">04 / Contact</p>
         <h2 id="contact-title">Contact</h2>
-        <p>I am available to discuss QA automation, software testing, and related opportunities.</p>
+        <p>${escapeHtml(portfolioConfig.contactMessage)}</p>
         <div class="contact-actions">
           <a class="button button-light" href="${escapeHtml(portfolioConfig.linkedInUrl)}" target="_blank" rel="noreferrer">Contact me on LinkedIn ${icon("link")}</a>
         </div>
@@ -337,6 +339,32 @@ const showConfigurationPrompt = () => {
     </article>`;
 };
 
+const loadRepositoryTopics = async (repo: GitHubRepository): Promise<string[]> => {
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${encodeURIComponent(portfolioConfig.githubUsername)}/${encodeURIComponent(repo.name)}/topics`,
+      { headers: { Accept: "application/vnd.github+json" } }
+    );
+
+    if (!response.ok) {
+      return repo.topics ?? [];
+    }
+
+    const data = (await response.json()) as { names?: string[] };
+    return data.names ?? [];
+  } catch {
+    return repo.topics ?? [];
+  }
+};
+
+const enrichRepositoriesWithTopics = async (repos: GitHubRepository[]) =>
+  Promise.all(
+    repos.map(async (repo) => ({
+      ...repo,
+      topics: await loadRepositoryTopics(repo)
+    }))
+  );
+
 const loadRepositories = async () => {
   if (isPlaceholderUsername) {
     showConfigurationPrompt();
@@ -354,7 +382,7 @@ const loadRepositories = async () => {
     }
 
     const data = (await response.json()) as GitHubRepository[];
-    repositories = data
+    const selected = data
       .filter((repo) => !repo.archived)
       .filter((repo) => portfolioConfig.showForkedRepositories || !repo.fork)
       .sort((a, b) => {
@@ -362,6 +390,8 @@ const loadRepositories = async () => {
         return scoreDifference || new Date(b.pushed_at).getTime() - new Date(a.pushed_at).getTime();
       })
       .slice(0, portfolioConfig.repositoryLimit);
+
+    repositories = await enrichRepositoriesWithTopics(selected);
 
     renderRepositories(repositories);
   } catch (error) {
