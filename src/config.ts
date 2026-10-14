@@ -13,7 +13,7 @@ export const portfolioConfig = {
   approach: "Risk-based testing",
   linkedInUrl: "https://www.linkedin.com/in/andreea-baboi",
   metaDescription:
-    "Quality Assurance Engineer portfolio featuring test planning, automation samples, and public GitHub repositories.",
+    "Quality Assurance Engineer portfolio with public GitHub repositories.",
   contactMessage:
     "I am available to discuss quality assurance, software testing, and related opportunities.",
   about: [

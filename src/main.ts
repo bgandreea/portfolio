@@ -1,6 +1,7 @@
+/// <reference types="vite/client" />
 import "./styles.css";
 import { pageTitle, portfolioConfig } from "./config";
-import { automationSnippet, testCase, testPlan } from "./content";
+import familyExample from "../examples/test_lily_garden_family.py?raw";
 
 type GitHubRepository = {
   id: number;
@@ -38,7 +39,7 @@ const escapeHtml = (value: string): string =>
       })[character] ?? character
   );
 
-const icon = (name: "arrow" | "github" | "link" | "star" | "fork" | "check") => {
+const icon = (name: "arrow" | "github" | "link" | "star" | "fork") => {
   const icons = {
     arrow:
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
@@ -46,17 +47,47 @@ const icon = (name: "arrow" | "github" | "link" | "star" | "fork" | "check") => 
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.87c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.35 1.09 2.92.83.09-.65.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.58 9.58 0 0 1 12 6.84a9.6 9.6 0 0 1 2.5.34c1.91-1.3 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85V21c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>',
     link: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07.07l2-2a5 5 0 0 0-7.07-7.07l-1.15 1.15M14 11a5 5 0 0 0-7.07-.07l-2 2A5 5 0 0 0 12 20l1.15-1.15"/></svg>',
     star: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.75 5.57 6.15.9-4.45 4.33 1.05 6.12L12 16.83l-5.5 2.89 1.05-6.12L3.1 9.27l6.15-.9L12 2.8Z"/></svg>',
-    fork: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><path d="M6 7v2c0 2 1.5 3 3 3h6c1.5 0 3-1 3-3V7M12 12v5"/></svg>',
-    check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>'
+    fork: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><path d="M6 7v2c0 2 1.5 3 3 3h6c1.5 0 3-1 3-3V7M12 12v5"/></svg>'
   };
 
   return icons[name];
 };
 
-const renderList = (items: readonly string[]) =>
-  `<ul class="check-list">${items
-    .map((item) => `<li>${icon("check")}<span>${escapeHtml(item)}</span></li>`)
-    .join("")}</ul>`;
+const manualSteps = [
+  ["Boot Lily's Garden.", "The game opens on the start menu."],
+  ["Continue through the start menu.", "You leave the menu and enter the game."],
+  ["Confirm you are in the game.", "The main screen is visible."],
+  ["Set progress to the level before the family feature unlocks.", "That level is the current level."],
+  ["Confirm the family feature is still locked.", "The family icon is not on the main screen."],
+  ["Play the level and win it.", "The win flow begins."],
+  ["Continue through the win screens.", "You return to the main screen."],
+  ["Dismiss other popups until the family popup is showing.", "The family popup is the one on screen."],
+  ["Confirm the family icon is visible.", "The icon is on the main screen."],
+  ["Open Family.", "The family screen opens."],
+  ["Create a family.", "The new family is created."],
+  ["Confirm the family exists.", "You are inside the family you created."],
+  ["Leave the family.", "You are no longer a member."],
+  ["Join a random family.", "You become a member of another family."],
+  ["Confirm you are in that family.", "The family screen shows an active membership."],
+  ["Switch to a different family.", "You leave the current family and join another one."],
+  ["Confirm you are in the new family.", "The membership matches the family you switched to."],
+  ["Leave the family again.", "You are no longer a member."],
+  ["Confirm you are not in a family.", "The family screen shows no membership."],
+  ["Close Lily's Garden.", "The game is no longer running."]
+] as const;
+
+const manualRun = manualSteps
+  .map(
+    ([action, expected], index) => `
+      <li>
+        <span>${String(index + 1).padStart(2, "0")}</span>
+        <div>
+          <strong>${escapeHtml(action)}</strong>
+          <p>${escapeHtml(expected)}</p>
+        </div>
+      </li>`
+  )
+  .join("");
 
 const isPlaceholderUsername = portfolioConfig.githubUsername === "YOUR_GITHUB_USERNAME";
 const githubProfileUrl = isPlaceholderUsername
@@ -64,6 +95,7 @@ const githubProfileUrl = isPlaceholderUsername
   : `https://github.com/${portfolioConfig.githubUsername}`;
 
 app.innerHTML = `
+  <canvas id="matrix-rain" aria-hidden="true"></canvas>
   <header class="site-header" id="top">
     <a class="brand" href="#top" aria-label="Back to top">
       <span class="brand-mark">QA</span>
@@ -74,7 +106,7 @@ app.innerHTML = `
     </button>
     <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
       <a href="#about">About</a>
-      <a href="#artifacts">Test artifacts</a>
+      <a href="#example">Example</a>
       <a href="#repositories">Repositories</a>
       <a class="nav-cta" href="#contact">Contact</a>
     </nav>
@@ -84,11 +116,11 @@ app.innerHTML = `
     <section class="hero section-shell" aria-labelledby="hero-title">
       <div class="hero-copy reveal">
         <p class="eyebrow"><span class="status-dot"></span>${escapeHtml(portfolioConfig.availability)}</p>
-        <h1 id="hero-title"><span>${escapeHtml(portfolioConfig.headline)}</span></h1>
+        <h1 id="hero-title"><span>${escapeHtml(portfolioConfig.headline)}</span><i class="caret" aria-hidden="true"></i></h1>
         <p class="hero-role">${escapeHtml(portfolioConfig.role)}</p>
         <p class="hero-intro">${escapeHtml(portfolioConfig.intro)}</p>
         <div class="hero-actions">
-          <a class="button button-primary" href="#artifacts">Explore my work ${icon("arrow")}</a>
+          <a class="button button-primary" href="#repositories">Explore my work ${icon("arrow")}</a>
           <a class="button button-ghost" href="${githubProfileUrl}" target="_blank" rel="noreferrer">${icon("github")} GitHub profile</a>
         </div>
         <dl class="hero-facts">
@@ -97,28 +129,16 @@ app.innerHTML = `
           <div><dt>Approach</dt><dd>${escapeHtml(portfolioConfig.approach)}</dd></div>
         </dl>
       </div>
-      <div class="hero-visual reveal" aria-label="Stylized quality engineering dashboard">
-        <div class="signal-card signal-card-primary">
-          <div class="window-bar"><span></span><span></span><span></span></div>
-          <div class="code-lines" aria-hidden="true">
-            <span class="line line-wide"></span>
-            <span class="line line-mid"></span>
-            <span class="line line-short"></span>
-            <span class="line line-wide"></span>
-          </div>
-          <div class="run-summary">
-            <div class="run-score">98<span>%</span></div>
-            <div><strong>Smoke test pass rate</strong><small>Example execution summary</small></div>
-          </div>
+      <figure class="hero-portrait reveal">
+        <div class="portrait-frame">
+          <img
+            src="${import.meta.env.BASE_URL}portrait.png?v=2"
+            alt="Portrait of ${escapeHtml(portfolioConfig.name)}"
+            width="819"
+            height="788"
+          />
         </div>
-        <div class="signal-card signal-card-small signal-pass">
-          <span class="signal-icon">✓</span><div><strong>42 passed</strong><small>Smoke suite</small></div>
-        </div>
-        <div class="signal-card signal-card-small signal-risk">
-          <span class="signal-icon">!</span><div><strong>1 risk</strong><small>Under review</small></div>
-        </div>
-        <div class="grid-glow"></div>
-      </div>
+      </figure>
     </section>
 
     <section class="section-shell about" id="about" aria-labelledby="about-title">
@@ -136,88 +156,26 @@ app.innerHTML = `
       </div>
     </section>
 
-    <section class="artifacts-section" id="artifacts" aria-labelledby="artifacts-title">
-      <div class="section-shell">
-        <div class="section-heading reveal">
-          <p class="section-kicker">02 / Test artifacts</p>
-          <h2 id="artifacts-title">Test documentation samples</h2>
-          <p>Examples of a test case, a regression test plan, and an automated UI test.</p>
-        </div>
-
-        <article class="artifact-card reveal">
-          <div class="artifact-header">
-            <div>
-              <p class="artifact-type">Test case | ${escapeHtml(testCase.id)}</p>
-              <h3>${escapeHtml(testCase.title)}</h3>
-            </div>
-            <div class="artifact-badges"><span>${escapeHtml(testCase.priority)}</span><span>${escapeHtml(testCase.type)}</span></div>
-          </div>
-          <div class="artifact-meta">
-            <div><span>Feature</span><strong>${escapeHtml(testCase.feature)}</strong></div>
-            <div><span>Test data</span><strong>${escapeHtml(testCase.data.email)}</strong></div>
-          </div>
-          <div class="artifact-columns">
-            <div>
-              <h4>Preconditions</h4>
-              ${renderList(testCase.preconditions)}
-            </div>
-            <div>
-              <h4>Coverage notes</h4>
-              <p>${escapeHtml(testCase.notes)}</p>
-            </div>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>#</th><th>Action</th><th>Expected result</th></tr></thead>
-              <tbody>
-                ${testCase.steps
-                  .map(
-                    ({ step, action, expected }) =>
-                      `<tr><td>${step}</td><td>${escapeHtml(action)}</td><td>${escapeHtml(expected)}</td></tr>`
-                  )
-                  .join("")}
-              </tbody>
-            </table>
-          </div>
-        </article>
-
-        <article class="artifact-card reveal">
-          <div class="artifact-header">
-            <div>
-              <p class="artifact-type">Test plan | Version ${escapeHtml(testPlan.version)}</p>
-              <h3>${escapeHtml(testPlan.title)}</h3>
-            </div>
-            <div class="artifact-badges"><span>Risk-based</span><span>Regression</span></div>
-          </div>
-          <p class="artifact-objective">${escapeHtml(testPlan.objective)}</p>
-          <div class="plan-grid">
-            <div class="plan-panel"><h4>In scope</h4>${renderList(testPlan.scope.included)}</div>
-            <div class="plan-panel"><h4>Strategy</h4>${renderList(testPlan.strategy)}</div>
-            <div class="plan-panel"><h4>Entry criteria</h4>${renderList(testPlan.entryCriteria)}</div>
-            <div class="plan-panel"><h4>Exit criteria</h4>${renderList(testPlan.exitCriteria)}</div>
-          </div>
-          <details class="artifact-details">
-            <summary>Risks, exclusions, and deliverables <span>+</span></summary>
-            <div class="details-grid">
-              <div><h4>Risks &amp; mitigations</h4>${renderList(testPlan.risks)}</div>
-              <div><h4>Out of scope</h4>${renderList(testPlan.scope.excluded)}</div>
-              <div><h4>Deliverables</h4>${renderList(testPlan.deliverables)}</div>
-            </div>
-          </details>
-        </article>
-
-        <article class="automation-card reveal" aria-labelledby="automation-title">
-          <div>
-            <p class="artifact-type">Automation sample</p>
-            <h3 id="automation-title">Python UI test with pytest and Selenium</h3>
-            <p>This example uses explicit waits, environment variables for credentials, and checks for the final URL and page heading.</p>
-          </div>
-          <div class="code-card">
-            <div class="code-card-header"><span>test_sign_in.py</span><button id="copy-code" type="button">Copy</button></div>
-            <pre><code>${escapeHtml(automationSnippet)}</code></pre>
-          </div>
-        </article>
+    <section class="section-shell example-section" id="example" aria-labelledby="example-title">
+      <div class="section-heading reveal">
+        <p class="section-kicker">02 / Test example</p>
+        <h2 id="example-title">Mobile Game Test Flow</h2>
+        <p class="mock-note">Example from Lily's Garden. This is a mock, not a working test.</p>
       </div>
+      <div class="manual-run reveal">
+        <h3>Manual run</h3>
+        <ol>${manualRun}</ol>
+      </div>
+      <article class="code-card reveal">
+        <div class="code-card-header"><span>test_lily_garden_family.py</span><button id="copy-code" type="button">Copy</button></div>
+        <div class="code-card-body" id="example-code">
+          <pre><code>${escapeHtml(familyExample)}</code></pre>
+        </div>
+        <button class="code-expand" type="button" aria-expanded="false" aria-controls="example-code">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          <span class="sr-only">Show the full example</span>
+        </button>
+      </article>
     </section>
 
     <section class="section-shell repositories-section" id="repositories" aria-labelledby="repositories-title">
@@ -249,7 +207,7 @@ app.innerHTML = `
   </main>
 
   <footer class="site-footer section-shell">
-    <p>Built with TypeScript and Vite. The automation example uses Python, pytest, and Selenium.</p>
+    <p>Built with TypeScript and Vite.</p>
     <a href="#top">Back to top ↑</a>
   </footer>
 `;
@@ -273,11 +231,25 @@ nav?.querySelectorAll("a").forEach((link) => {
 const copyButton = document.querySelector<HTMLButtonElement>("#copy-code");
 copyButton?.addEventListener("click", async () => {
   try {
-    await navigator.clipboard.writeText(automationSnippet);
+    await navigator.clipboard.writeText(familyExample);
     copyButton.textContent = "Copied";
-    window.setTimeout(() => (copyButton.textContent = "Copy"), 1500);
+    window.setTimeout(() => {
+      copyButton.textContent = "Copy";
+    }, 1500);
   } catch {
     copyButton.textContent = "Select code";
+  }
+});
+
+const codeCard = document.querySelector<HTMLElement>("#example .code-card");
+const codeExpand = codeCard?.querySelector<HTMLButtonElement>(".code-expand");
+codeExpand?.addEventListener("click", () => {
+  const isExpanded = codeExpand.getAttribute("aria-expanded") === "true";
+  codeExpand.setAttribute("aria-expanded", String(!isExpanded));
+  codeCard?.classList.toggle("is-expanded", !isExpanded);
+  const label = codeExpand.querySelector(".sr-only");
+  if (label) {
+    label.textContent = isExpanded ? "Show the full example" : "Hide the full example";
   }
 });
 
@@ -427,4 +399,67 @@ const revealObserver = new IntersectionObserver(
 
 document.querySelectorAll(".reveal").forEach((element) => revealObserver.observe(element));
 
+const startMatrixRain = () => {
+  const canvas = document.querySelector<HTMLCanvasElement>("#matrix-rain");
+  if (!canvas) return;
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    canvas.remove();
+    return;
+  }
+
+  const context = canvas.getContext("2d");
+  if (!context) return;
+
+  const digits = ["0", "1"];
+  const rare = ["ア", "イ", "ウ", "エ", "オ", "カ", "キ", "ク"];
+  const fontSize = 15;
+  let width = 0;
+  let height = 0;
+  let drops: number[] = [];
+
+  const resize = () => {
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = Math.floor(width * pixelRatio);
+    canvas.height = Math.floor(height * pixelRatio);
+    context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    drops = Array.from({ length: Math.ceil(width / fontSize) }, () => Math.random() * -24);
+  };
+
+  resize();
+  window.addEventListener("resize", resize, { passive: true });
+
+  let lastFrame = 0;
+  const draw = (time: number) => {
+    requestAnimationFrame(draw);
+    if (document.hidden || time - lastFrame < 80) return;
+    lastFrame = time;
+
+    context.fillStyle = "rgba(0, 0, 0, 0.22)";
+    context.fillRect(0, 0, width, height);
+    context.font = `500 ${fontSize}px "IBM Plex Mono", monospace`;
+
+    drops.forEach((drop, index) => {
+      if (index % 2 === 0) return;
+
+      const glyph = Math.random() > 0.94 ? rare[Math.floor(Math.random() * rare.length)] : digits[index % 2];
+      const y = drop * fontSize;
+      context.fillStyle = y < fontSize * 2 ? "rgba(214, 255, 228, 0.8)" : "rgba(61, 255, 122, 0.38)";
+      context.fillText(glyph ?? "0", index * fontSize, y);
+
+      if (y > height && Math.random() > 0.978) {
+        drops[index] = 0;
+        return;
+      }
+
+      drops[index] += 0.45;
+    });
+  };
+
+  requestAnimationFrame(draw);
+};
+
+startMatrixRain();
 void loadRepositories();
